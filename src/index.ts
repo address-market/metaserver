@@ -1,9 +1,8 @@
 import express from 'express';
 import path from 'path';
-import fs from 'fs';
 import cors from 'cors';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import { isValidEthereumAddress } from './helpers';
+import { isValidEthereumAddress, uint256ToAddress } from './helpers';
 
 registerFont(path.join(__dirname, '../assets', 'OpenSans-Regular.ttf'), {
   family: 'Open Sans',
@@ -13,7 +12,7 @@ const app = express();
 app.use(cors());
 app.use((req: express.Request, res: express.Response, next: Function) => {
   if (!req.url.endsWith('.jpg')) {
-    // console.log('ACCESS LOG', req.url);
+    console.log('ACCESS LOG', req.url);
   }
   next();
 });
@@ -52,8 +51,9 @@ app.get('/:addr.png', (req: express.Request, res: express.Response) => {
 });
 
 app.get('/:token', (req: express.Request, res: express.Response) => {
-  const { token } = req.params; // token is address
-  if (!isValidEthereumAddress(token)) {
+  const { token } = req.params;
+  const address = uint256ToAddress(token);
+  if (!isValidEthereumAddress(address)) {
     res.status(404).end();
     return;
   }
@@ -61,8 +61,8 @@ app.get('/:token', (req: express.Request, res: express.Response) => {
   const domain = req.get('host');
   const protocol = req.protocol;
   res.json({
-    description: `NFT Address Option for ${token}`,
-    image: `${protocol}://${domain}/${token}.png`,
+    description: `NFT Address Option for ${address}`,
+    image: `${protocol}://${domain}/${address}.png`,
   });
 });
 
