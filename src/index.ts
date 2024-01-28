@@ -96,6 +96,12 @@ app.get('/:token', (req: express.Request, res: express.Response) => {
     description: `Address NFT for ${address}`,
     name: `Address NFT ${address}`,
     image: `${protocol}://${domain}/${address}.png`,
+    traits: [
+      {
+        trait_type: 'Characteristics',
+        value: getAddressDescription(address),
+      },
+    ],
   });
 });
 
