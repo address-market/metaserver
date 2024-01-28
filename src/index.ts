@@ -4,6 +4,7 @@ import cors from 'cors';
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import { isValidEthereumAddress, uint256ToAddress } from './helpers';
 import { checksumAddress } from 'viem';
+import { getAddressDescription } from './semantics';
 
 registerFont(path.join(__dirname, '../assets', 'OpenSans-Regular.ttf'), {
   family: 'Open Sans',
@@ -50,6 +51,17 @@ app.get('/:addr.png', (req: express.Request, res: express.Response) => {
       const textY = canvas.height / 2 + 175;
       // context.strokeText(addressPart2, textX, textY);
       context.fillText(addressPart2, textX, textY);
+    }
+
+    const subtext = getAddressDescription(addr);
+    {
+      context.font = '24px Open Sans';
+      // context.fillStyle = '#ffffff';
+
+      const textX = canvas.width / 2 - context.measureText(subtext).width / 2;
+      const textY = canvas.height / 2 - 215;
+      // context.strokeText(subtext, textX, textY);
+      context.fillText(subtext, textX, textY);
     }
 
     // Convert the canvas to a PNG buffer
